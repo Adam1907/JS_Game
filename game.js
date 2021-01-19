@@ -117,7 +117,7 @@ var bullets = []
         this.draw = function(){
             c.beginPath();
             c.rect(this.x, this.y, this.width, this.height);
-            c.fillStyle = "#fff";
+            c.fillStyle = "#40ff00";
             c.fill();
             c.stroke();
         }
@@ -134,7 +134,6 @@ var bullets = []
         39: false, // RIGHT
         38: false, // UP
         40: false, // DOWN
-        32: false, // SPACE
     }
 
 //POHYB HRÁČE
@@ -165,7 +164,6 @@ var bullets = []
 });
 
 /*******/
-
 
 //HRÁČ
 var player = {},
@@ -220,8 +218,8 @@ function collisionDetection(){
         if(collision(bullet, enemy)){
             bullet.delete();
             enemy.delete();
-            score += 10;
-            console.log("HIT!")
+            score += 100;
+            console.log("HIT")
         }
 
         });
@@ -231,14 +229,12 @@ function collisionDetection(){
         if(collision(player, enemy)){
             player.hp += -1;
             enemy.delete();
-            score += 10;
-            console.log("DAMAGE!")
+            console.log("DAMAGE")
         }
 
         });
 
 }
-
 
 //ANIMACE
 
@@ -273,6 +269,7 @@ function animate(currentTime) {
 
     if(player.hp <= 0){
         cancelAnimationFrame(animation);
+        window.alert("YOUR SCORE: "+score);
         console.log("GAME OVER")
     }
 }
