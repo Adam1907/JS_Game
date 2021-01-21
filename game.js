@@ -1,3 +1,4 @@
+// NASTAVENÍ HRACÍ PLOCHY/PLÁTNA
 var canvas = document.getElementById("canvas"),
     c = canvas.getContext("2d");
 
@@ -6,8 +7,9 @@ var innerWidth = 295,
     canvas.width = innerWidth;
     canvas.height = innerHeight;
 
+//----------------------------------------------/
 
-
+// Vytvoření pole a funkce s nepřateli + nastavení parametrů a vytvoření metod
 var enemies = [],
     enemyIndex = 0.
     enemy_width = 35,
@@ -50,25 +52,24 @@ function enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation){
             this.dx = Math.abs(this.dx);
         }
 
-
+// PODMÍNKA KTERÁ MAŽE NEPŘÁTELE KTEŘÍ SE DOSTALI MIMO PLÁTNO
         if(this.y > innerHeight + this.height){
             this.delete();
         }
         this.draw();
     }
 
-
+// FUNKCE DELETE KTERÁ SMAŽE PRVEK Z POLE enemies
     this.delete = function(){
         delete enemies[this.id]
     }
-
+// KRESLÍCÍ FUNKCE
     this.draw = function(){
     c.drawImage(this.img, this.x, this.y, this.width, this.height);
+ }
 }
-}
 
-
-
+// FUNKCE KTERÁ VYTVOŘÍ NEPŘÍTELE V NÁHODNÉ ŠÍŘCE A S NÁHODNÝM SMĚREM
 function create_enemy(){
     var x = Math.random() * (innerWidth - enemy_width);
     var y = -enemy_height;
@@ -79,8 +80,9 @@ function create_enemy(){
     new enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation)
 }
 
+//-------------------------------------------------------------------/
 
-
+// Vytvoření pole a funkce střel + nastavení parametrů a vytvoření metod
 var bullets = []
     bulletIndex = 0,
     bullet_width = 8,
@@ -104,16 +106,17 @@ var bullets = []
 
         this.update = function(){
             this.y += -this.speed;
+// PODMÍNKA KTERÁ MAŽE STŘELY KTEŘÉ SE DOSTALI MIMO PLÁTNO
             if(this.y < -this.height){
                 delete this.delete();
             }
             this.draw();
         }
-
+// FUNKCE DELETE KTERÁ SMAŽE PRVEK Z POLE bullets
         this.delete = function(){
             delete bullets[this.id];
         };
-
+// KRESLÍCÍ FUNKCE
         this.draw = function(){
             c.beginPath();
             c.rect(this.x, this.y, this.width, this.height);
@@ -123,10 +126,14 @@ var bullets = []
         }
 
     }
+//--------------------------------------------------------//
 
 
+// ŽIVOTY A SKORE HRÁČE
     var hp = 3;
     var score = 0,
+//------------------//    
+    
     lastTime = 0;
 
     var map = {
@@ -156,14 +163,14 @@ var bullets = []
         }
     });
 
-
-    addEventListener("keyup", function(event){
+// FUNKCE KTERÁ SE STARÁ O TO ABY PO STISKNUTÍ PRVNÍ KLÁVESY NEŠEL HRÁČ DO JEDNOHO SMĚRU
+   addEventListener("keyup", function(event){
         if(event.keyCode in map){
             map[event.keyCode] = false;
         }
 });
 
-/*******/
+//----------------------------------------------/
 
 //HRÁČ
 var player = {},
@@ -173,13 +180,14 @@ var player = {},
     player_img.src = "img/ship.png";
 
 
-//HRÁČ
+
 player = {
     width : player_width,
     height : player_height,
     x : innerWidth / 2 - player_width / 2,
     y : innerHeight - (player_height + 10),
     hp : 1,
+// KRESLÍCÍ FUNKCE
     draw: function() {
         if(this.x <= 0){
             this.x = 0;
@@ -198,20 +206,21 @@ player = {
 
 };
 
-
+//--------------------------------------------------------------------------/
+//FUNKCE STŘELBY
 function fire(){
     var x = (player.x + player.width / 2) - bullet_width / 2;
     var y = player.y;
     new bullet(x, y, bullet_width, bullet_height, speed);
 }
-
+// VÝPOČET KOLIZÍ 
 function collision(a, b){
     return a.x < b.x + b.width &&
            a.x + a.width > b.x &&
            a.y < b.y + b.height &&
            a.y + a.height > b.y;
 }
-
+// DETEKCE KOLIZÍ KTERÁ KONTROLUJE ZDA STŘELA TREFILA NEPŘÍTELE, POKUD ANO VYMAŽE STŘELU NEPŘÍTELE A PŘIČTE DO SKORE 100
 function collisionDetection(){
     bullets.forEach(function(bullet){
         enemies.forEach(function(enemy){
@@ -224,7 +233,7 @@ function collisionDetection(){
 
         });
     });
-
+// 2. ČÁST KTERÁ KONTROLUJE ZDA NEPŘÍTEL ZASÁHL HRÁČE, POKUD ANO SMAŽE NEPŘÍTELE A UBERE HRÁČI 1 BOD ZDRAVÍ
     enemies.forEach(function(enemy){
         if(collision(player, enemy)){
             player.hp += -1;
@@ -236,12 +245,12 @@ function collisionDetection(){
 
 }
 
-//ANIMACE
+//ANIMACE 
 
 function animate(currentTime) {
     var animation = requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
-
+// VYKRESLENÍ SKORE NA PLÁTNO
     c.font ="10px arial";
     c.fillStyle = "#fff";
     c.fillText("SCORE: "+score, 8, 25);
@@ -255,6 +264,7 @@ function animate(currentTime) {
             enemy.update();
         })
 
+// ČASOVAČ KTERÝ SE STARÁ O VOLÁNÍ FUNKCE STŘELBY
     if(currentTime >= bullet_last_time + bullet_timer){
         bullet_last_time = currentTime;
         fire();
@@ -264,14 +274,15 @@ function animate(currentTime) {
         bullet.update();
     });
 
-    
+    // VOLÁNÍ FUNKCE DETEKCE KOLIZE
     collisionDetection();
 
+    // PODMÍNKA KTERÁ STOPNE HRU A VYPÍŠE SKORE POKUD ŽIVOTY HRÁČE KLESNOU NA NULU
     if(player.hp <= 0){
         cancelAnimationFrame(animation);
         window.alert("YOUR SCORE: "+score);
         console.log("GAME OVER")
     }
 }
-
-animate();
+// SPUŠTĚNÍ HRY
+    animate();
